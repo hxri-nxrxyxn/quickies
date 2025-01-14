@@ -127,9 +127,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 
 func main() {
         router := mux.NewRouter()
-        fs := http.FileServer(http.Dir("static"))
 
-        router.Handle("/", fs)
         router.HandleFunc("/users", getUsers).Methods("GET")
         router.HandleFunc("/users/{id}", getUser).Methods("GET")
         router.HandleFunc("/users", createUser).Methods("POST")

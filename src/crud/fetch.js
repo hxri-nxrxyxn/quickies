@@ -1,9 +1,5 @@
-// Simplified CRUD Operations with Fetch API
-
-// Base URL for your API endpoints
 const baseUrl = 'http://your-api-endpoint.com/'; 
 
-// 1. GET (Read)
 async function get(endpoint) {
   try {
     const response = await fetch(`${baseUrl}${endpoint}`);
@@ -17,7 +13,6 @@ async function get(endpoint) {
   }
 }
 
-// 2. POST (Create)
 async function post(endpoint, data) {
   try {
     const response = await fetch(`${baseUrl}${endpoint}`, {
@@ -37,7 +32,6 @@ async function post(endpoint, data) {
   }
 }
 
-// 3. PUT (Update)
 async function put(endpoint, data) {
   try {
     const response = await fetch(`${baseUrl}${endpoint}`, {
@@ -57,7 +51,6 @@ async function put(endpoint, data) {
   }
 }
 
-// 4. DELETE (Delete)
 async function del(endpoint) {
   try {
     const response = await fetch(`${baseUrl}${endpoint}`, {
@@ -76,21 +69,17 @@ async function del(endpoint) {
 // Example Usage
 async function fetchData() {
   try {
-    // Get data
     const data = await get('/users'); 
     console.log(data);
 
-    // Create new data
     const newData = { name: 'New User', email: 'newuser@example.com' };
     const createdData = await post('/users', newData);
     console.log(createdData);
 
-    // Update existing data
     const updatedData = { id: createdData.id, name: 'Updated User' };
     const updatedResult = await put(`/users/${updatedData.id}`, updatedData);
     console.log(updatedResult);
 
-    // Delete data
     const deleted = await del(`/users/${updatedData.id}`);
     console.log('Deleted:', deleted); 
 
