@@ -7,7 +7,8 @@ import (
         "log"
         "net/http"
 
-        "github.com/gorilla/mux"
+        "github.com/gorilla/mux" 
+        "github.com/gorilla/handlers"
         _ "github.com/go-sql-driver/mysql"
 )
 
@@ -27,6 +28,7 @@ func init() {
 }
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
+        enableCors(&w)
         rows, err := db.Query("SELECT id, name FROM users")
         if err != nil {
                 http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -49,6 +51,7 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func getUser(w http.ResponseWriter, r *http.Request) {
+        enableCors(&w)
         vars := mux.Vars(r)
         id := vars["id"]
 
@@ -68,6 +71,11 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func createUser(w http.ResponseWriter, r *http.Request) {
+      // Handle CORS preflighted request sent by browser.
+        enableCors(&w)
+        if (*r).Method == "OPTIONS" {
+                return
+        }
         var u User
         err := json.NewDecoder(r.Body).Decode(&u)
         if err != nil {
@@ -93,6 +101,10 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateUser(w http.ResponseWriter, r *http.Request) {
+        enableCors(&w)
+        if (*r).Method == "OPTIONS" {
+                return
+        }
         vars := mux.Vars(r)
         id := vars["id"]
 
@@ -113,6 +125,10 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteUser(w http.ResponseWriter, r *http.Request) {
+        enableCors(&w)
+        if (*r).Method == "OPTIONS" {
+                return
+        }
         vars := mux.Vars(r)
         id := vars["id"]
 
@@ -125,6 +141,14 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusNoContent)
 }
 
+func enableCors(w *http.ResponseWriter) {
+        (*w).Header().Set("Access-Control-Allow-Origin", "*")
+        (*w).Header().Set("Access-Control-Allow-Methods", "DELETE, PUT, POST, GET, OPTIONS")
+        // We need to allow the Authorization header to be sent to the backend.
+        (*w).Header().Set("Access-Control-Allow-Headers", "*")
+        (*w).Header().Set("Access-Control-Max-Age", "86400")
+}
+
 func main() {
         router := mux.NewRouter()
 
@@ -134,6 +158,11 @@ func main() {
         router.HandleFunc("/users/{id}", updateUser).Methods("PUT")
         router.HandleFunc("/users/{id}", deleteUser).Methods("DELETE")
 
+        corsObj := handlers.AllowedOrigins([]string{"*"}) // Replace with your allowed origins
+        corsObj = append(corsObj, handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}))
+        corsObj = append(corsObj, handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}))
+        handler := handlers.CORS(corsObj)(router)
+
         fmt.Println("Server listening on :8080")
-        log.Fatal(http.ListenAndServe(":8080", router))
+        log.Fatal(http.ListenAndServe(":8080", handler))
 }

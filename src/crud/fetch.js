@@ -1,4 +1,4 @@
-const baseUrl = 'http://your-api-endpoint.com/'; 
+const baseUrl = 'http://localhost:8080'; 
 
 async function get(endpoint) {
   try {
@@ -17,9 +17,10 @@ async function post(endpoint, data) {
   try {
     const response = await fetch(`${baseUrl}${endpoint}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      // headers: {
+      //   'Content-Type': 'application/json',
+      // },
+      // causes preflight requests -> cors issues
       body: JSON.stringify(data),
     });
     if (!response.ok) {
@@ -36,9 +37,9 @@ async function put(endpoint, data) {
   try {
     const response = await fetch(`${baseUrl}${endpoint}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      // headers: {
+      // 'Content-Type': 'application/json',
+      // },
       body: JSON.stringify(data),
     });
     if (!response.ok) {
@@ -88,4 +89,4 @@ async function fetchData() {
   }
 }
 
-  
+export { get, post, put, del }

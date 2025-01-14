@@ -3,7 +3,6 @@
 </script>
 
 <main>
-  hey
   <Crud/>
 </main>
 
